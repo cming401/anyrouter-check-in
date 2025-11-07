@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-# 添加项目根目录到 PATH
+# Add project root directory to PATH
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -13,7 +13,7 @@ import checkin
 
 @pytest.mark.asyncio
 async def test_check_in_account_without_waf_cookies():
-	"""测试当无法获取 WAF cookies 时仍然尝试获取用户余额"""
+	"""Test that user balance is still retrieved when WAF cookies cannot be obtained"""
 	account_info = {'cookies': {'session': 'test_session'}, 'api_user': '12345'}
 
 	# Mock get_waf_cookies_with_playwright to return None (simulating failure)
@@ -59,7 +59,7 @@ async def test_check_in_account_without_waf_cookies():
 
 @pytest.mark.asyncio
 async def test_check_in_account_with_waf_cookies():
-	"""测试当成功获取 WAF cookies 时的正常流程"""
+	"""Test normal flow when WAF cookies are successfully obtained"""
 	account_info = {'cookies': {'session': 'test_session'}, 'api_user': '12345'}
 
 	# Mock get_waf_cookies_with_playwright to return WAF cookies
@@ -106,7 +106,7 @@ async def test_check_in_account_with_waf_cookies():
 
 @pytest.mark.asyncio
 async def test_check_in_account_balance_display_without_waf():
-	"""测试当 WAF cookies 失败时，仍然显示余额信息"""
+	"""Test that balance information is displayed even when WAF cookies fail"""
 	account_info = {'cookies': {'session': 'test_session'}, 'api_user': '12345'}
 
 	with patch('checkin.get_waf_cookies_with_playwright', new_callable=AsyncMock) as mock_get_waf:
