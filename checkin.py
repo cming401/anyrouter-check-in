@@ -123,22 +123,32 @@ async def get_waf_cookies_with_playwright(account_name: str):
 			return None
 
 
-def get_user_info(client, headers):
+def get_user_info(client, headers, account_name):
 	"""获取用户信息，返回格式化字符串和余额数值"""
 	try:
 		response = client.get('https://anyrouter.top/api/user/self', headers=headers, timeout=30)
 
+		print(f'[INFO] {account_name}: User info API status code: {response.status_code}')
+
 		if response.status_code == 200:
 			data = response.json()
+			print(f'[INFO] {account_name}: User info API response: {data}')
 			if data.get('success'):
 				user_data = data.get('data', {})
 				quota = round(user_data.get('quota', 0) / 500000, 2)
 				used_quota = round(user_data.get('used_quota', 0) / 500000, 2)
 				info_str = f':money: Current balance: ${quota}, Used: ${used_quota}'
 				return info_str, quota  # 返回字符串和余额数值
+			else:
+				error_msg = data.get('message', 'Unknown error')
+				print(f'[WARN] {account_name}: Failed to get user info - {error_msg}')
+				return f'[WARN] Failed to get user info: {error_msg}', 0
+		else:
+			print(f'[WARN] {account_name}: User info API returned status {response.status_code}')
+			return f'[WARN] Failed to get user info: HTTP {response.status_code}', 0
 	except Exception as e:
+		print(f'[ERROR] {account_name}: Exception getting user info: {str(e)}')
 		return f'[FAIL] Failed to get user info: {str(e)[:50]}...', 0
-	return None, 0
 
 
 async def check_in_account(account_info, account_index):
@@ -191,10 +201,14 @@ async def check_in_account(account_info, account_index):
 		user_info_text = None
 		balance = 0
 
-		user_info, balance = get_user_info(client, headers)
+		# 尝试获取用户信息
+		user_info, balance = get_user_info(client, headers, account_name)
 		if user_info:
 			print(user_info)
 			user_info_text = user_info
+		else:
+			print(f'[WARN] {account_name}: Unable to get user info, but continuing check-in...')
+			user_info_text = '[WARN] Unable to get user info'
 
 		print(f'[NETWORK] {account_name}: Executing check-in')
 
