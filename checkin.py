@@ -173,8 +173,8 @@ async def check_in_account(account_info, account_index):
 	# 步骤1：获取 WAF cookies
 	waf_cookies = await get_waf_cookies_with_playwright(account_name)
 	if not waf_cookies:
-		print(f'[FAILED] {account_name}: Unable to get WAF cookies')
-		return False, None, 0
+		print(f'[WARNING] {account_name}: Unable to get WAF cookies, will attempt API requests with user cookies only')
+		waf_cookies = {}
 
 	# 步骤2：使用 httpx 进行 API 请求
 	client = httpx.Client(http2=True, timeout=30.0)

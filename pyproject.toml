@@ -16,7 +16,8 @@ dev = [
   "pytest-cov>=4.1.0",
   "python-dotenv>=1.0.0",
   "ruff>=0.1.0",
-  "pre-commit>=3.0.0"
+  "pre-commit>=3.0.0",
+  "pytest-asyncio>=1.2.0",
 ]
 
 [tool.ruff]
@@ -32,3 +33,7 @@ unfixable = ["E101", "E402", "E501", "F841", "E731"]
 quote-style = "single"
 indent-style = "tab"
 docstring-code-format = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
